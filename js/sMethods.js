@@ -128,7 +128,7 @@ define(function(){
     }
     return s_x;
   }
-//js浮点数精度--两数相加  
+/*js浮点数精度--两数相加*/  
   function accAdd(num1,num2) {  
     var r1,r2,m;  
     try{r1 = num1.toString().split('.')[1].length;}catch(e){r1 = 0;}  
@@ -136,7 +136,7 @@ define(function(){
     m=Math.pow(10,Math.max(r1,r2));  
     return Math.round(num1*m+num2*m)/m;  
   }  
-//js浮点数精度--两数相减  
+/*js浮点数精度--两数相减*/  
   function accSub(num1,num2) {  
     var r1,r2,m;  
     try{r1 = num1.toString().split('.')[1].length;}catch(e){r1 = 0;}  
@@ -145,14 +145,14 @@ define(function(){
     n=(r1>=r2)?r1:r2;  
     return (Math.round(num1*m-num2*m)/m).toFixed(n);  
   }  
-//js浮点数精度--两数相乘   
+/*js浮点数精度--两数相乘*/   
   function accMul(num1,num2) {  
     var m=0,s1=num1.toString(),s2=num2.toString();   
     try{m+=s1.split(".")[1].length}catch(e){};  
     try{m+=s2.split(".")[1].length}catch(e){};  
     return Number(s1.replace(".",""))*Number(s2.replace(".",""))/Math.pow(10,m);  
   } 
-//js浮点数精度--两数相除  
+/*js浮点数精度--两数相除*/  
   function accDiv(num1,num2) {  
     var t1,t2,r1,r2;  
     try{t1 = num1.toString().split('.')[1].length;}catch(e){t1 = 0;}  
@@ -230,8 +230,8 @@ define(function(){
   }  
 /*h5生成图片*/  
   function canvasImg(options, callback) {
-    var P_W = $(window).width();
-    var P_H = $(window).height();
+    var P_W = window.innerWidth;
+    var P_H = window.innerHeight;
     var PSD_W = options.psd_w;
     var PSD_H = options.psd_h;
     var canvas = document.getElementById(options.canvasId);
