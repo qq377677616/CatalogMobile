@@ -251,7 +251,16 @@ define(function(){
       vars["newImg" + m].setAttribute("crossOrigin",'anonymous');
       vars["newImg" + m].src = options.imgList[m].url;
     }
-    vars["newImg" + (options.imgList.length - 1)].onload = function() {
+    var progress = 0;
+    for (var z in options.imgList) {
+      vars["newImg" + z].onload = function(){
+        progress += 100/options.imgList.length;
+        if (progress === 100) {
+          startDraw();
+        }
+      }
+    }
+    function startDraw() {
       //绘制图片  
       for (var n in options.imgList) {
         ctx.drawImage(vars["newImg" + n], 0, 0, vars["newImg" + n].width, n != 0 ? vars["newImg" + n].height : PSD_H,P_W * (options.imgList[n].imgX / PSD_W),P_H * (options.imgList[n].imgY / PSD_H), P_W * (options.imgList[n].imgW2 / PSD_W), P_H * (options.imgList[n].imgH2 / PSD_H));
@@ -266,7 +275,6 @@ define(function(){
         });
         ctx.fillText(options.textList[k].string, P_W * (options.textList[k].textX / PSD_W), P_H * (options.textList[k].textY / PSD_H)); 
       }
-      //生成的图片base64路径
       callback(canvas.toDataURL("image/png"));
     }
   }
