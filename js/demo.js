@@ -72,51 +72,31 @@ $(function(){
     console.log(res);
   });
   $("#generateImg").on("click", function(){
+    sMethods.showToast("绘制生成中", "none", "loading", function(){});
     sMethods.canvasImg({
-    canvasId: 'canvas', 
-    psd_w: 750,
-    psd_h: 1334 - 100,
-    bgImg: '../images/img_01.jpg',
-    imgList: [
-      {
-        url: '../images/head.jpg',
-        imgW2: 203,
-        imgH2: 204,
-        imgX: 73,
-        imgY: 118
-      },
-      {
-        url: '../images/head.jpg',
-        imgW2: 116,
-        imgH2: 116,
-        imgX: 509,
-        imgY: 991
-      }
-    ],
-    textList: [
-      {
-        string: '扬帆',
-        color: '#333',
-        fontSize: '20px',
-        fontFamily: 'Arial',
-        textX: 414,
-        textY: 278    
-      },
-      {
-        string: '暖萌内向的嘻哈怪杰',
-        color: '#D12815',
-        fontSize: '23px',
-        fontFamily: 'Arial',
-        textX: 160,
-        textY: 561    
-      }   
-    ]
-  }, function(res){
-    //console.log("生成的截屏图片地址为：");
-    //console.log(res);
-    $("#img").fadeIn(200).attr("src", res);
-    $("#close").fadeIn(200);
-  });
+      canvasId: 'canvas', 
+      psd_w: 750,
+      psd_h: 1334 - 100,
+      //bgImg: '../images/img_01.jpg',
+      imgList: [
+        { url: '../images/img_03.png', imgW: 648, imgH: 598, imgX: 103, imgY: 388 },
+        { url: '../images/img_02.png', imgW: 750, imgH: 1334, imgX: 0, imgY: 0 },
+        { url: '../images/head.jpg', imgW: 200, imgH: 200, imgX: 20, imgY: 20 },
+        { url: '../images/head.jpg', imgW: 200, imgH: 200, imgX: 500, imgY: 20, radius: "50%" },
+        { url: '../images/head.jpg', imgW: 200, imgH: 200, imgX: 260, imgY: 20, radius: 15 }
+      ],
+      textList: [
+        { string: '扬帆', color: '#333', fontSize: '20px', fontFamily: 'Arial', textX: 350, textY: 270 },
+        { string: '水平方向的普通文字', color: '#D12815', fontSize: '23px', fontFamily: 'Arial', textX: 200, textY: 320 },   
+        { string: '竖向文字', color: 'purple', fontSize: '24px', fontFamily: 'Arial', textX: 25, textY: 300, vel: 5}   
+      ]
+    }, function(res){
+      //console.log("生成的截屏图片地址为：");
+      //console.log(res);
+      $("#img").fadeIn(200).attr("src", res);
+      $("#close").fadeIn(200);
+      $("#showModal").css("zIndex", 9999).fadeOut(400,function(){$("#showModal").remove();});
+    });
   });
   $("#close").on("click", function(){
     $("#img, #close").fadeOut(100);

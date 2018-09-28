@@ -42,6 +42,7 @@ body{font-family:"Arial","microsoft yahei","微软雅黑","simsun"; position: re
 /*弹框*/
 #showModal{position: fixed;left:50%;-webkit-transform: translateX(-50%);-ms-transform: translateX(-50%);transform: translateX(-50%);top:0;width: 100%;max-width: 640px;height: 100%;z-index: 100000;text-align: center;color:#fff;}
 .showModalBox{width: 2.5rem;padding:.4rem;background: rgba(0,0,0,.8);position: relative;margin:0 auto;top:50%;-webkit-transform: translateY(-50%);-ms-transform: translateY(-50%);transform: translateY(-50%);border-radius: .1rem;}
+.showModalBox.iconBox{width: 1.5rem;}
 .showModalBox span{position: absolute;top:0;right:0;font-size: .4rem;cursor: pointer;padding:0 .05rem;}
 .showModalBox i{display: block;width: .7rem;height: .7rem;margin:0 auto;font-size: .6rem;}
 .showModalBox p{padding-top: .15rem;font-size:.26rem;line-height: .34rem;}

@@ -1,22 +1,19 @@
 define(function(){
   /*消息提示弹框*/       
   function showToast(text, duration, icon, callback) {
-    duration = duration || 1500
     var _box = '<div class="showModal_box">'+text+'</div>';
     if (icon) {
-      _box = '<div class="showModalBox">'+  
-                '<span class="close">&times;</span>'+ 
-                '<i class="icon iconfont">&#xe724;</i>'+
+      var _iconType = 'icon-weibiaoti14';
+      if (icon == "loading") { _iconType = 'icon-jiazaizhong'; }
+      _box = '<div class="showModalBox iconBox">'+  
+                '<i class="iconfont '+_iconType+'"></i>'+
                '<p>'+text+'</p>'+ 
               '</div>';    
-      $("body").delegate("#showModal", "click", function(){//关闭模态框
-        $("#showModal").fadeOut(400,function(){$("#showModal").remove();});
-      })         
     }
     var _str = '<div id="showModal">'+ _box +'</div>';
     $("body").append(_str);
     if (icon && duration === "none") {return;}
-    setTimeout(function(){$("#showModal").css("zIndex", 9999).fadeOut(400,function(){$("#showModal").remove();if(callback){callback();}});}, duration);        
+    setTimeout(function(){$("#showModal").css("zIndex", 9999).fadeOut(400,function(){$("#showModal").remove();if(callback){callback();}});}, duration ? duration : 1500);        
   }
   /*确认取消弹框*/
   function confirmModal(text, str, cancel, isCancel , confirm, opacity, callback) {//确认取消框
@@ -212,6 +209,7 @@ define(function(){
       xhr.send(form);
     });
     xhr.addEventListener('progress', function (res) {
+      _file.value = '';
       callBack(res);
     })
   }
@@ -244,7 +242,7 @@ define(function(){
     canvas.style.width = P_W + "px";
     canvas.style.height = P_H + "px";
     ctx.scale(ratio, ratio);
-    options.imgList.unshift({url: options.bgImg,imgW2: PSD_W,imgH2: PSD_H,imgX: 0,imgY: 0});
+    if (options.bgImg) {options.imgList.unshift({url: options.bgImg,imgW: PSD_W,imgH: PSD_H,imgX: 0,imgY: 0});}
     var vars = {};
     for (var m in options.imgList) {
       vars["newImg" + m] = new Image();
@@ -254,27 +252,78 @@ define(function(){
     var progress = 0;
     for (var z in options.imgList) {
       vars["newImg" + z].onload = function(){
-        progress += 100/options.imgList.length;
-        if (progress === 100) {
+        progress += 2520/options.imgList.length;
+        if (progress === 2520) {
           startDraw();
         }
       }
     }
+    function addRoundRectFunc() {
+      CanvasRenderingContext2D.prototype.roundRect =
+        function (x, y, width, height, radius, fill, stroke) {
+          if (typeof stroke == "undefined") { stroke = false; }
+          if (typeof radius === "undefined") { radius = 5; }
+          this.beginPath();
+          this.moveTo(x + radius, y);
+          this.lineTo(x + width - radius, y);
+          this.quadraticCurveTo(x + width, y, x + width, y + radius);
+          this.lineTo(x + width, y + height - radius);
+          this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+          this.lineTo(x + radius, y + height);
+          this.quadraticCurveTo(x, y + height, x, y + height - radius);
+          this.lineTo(x, y + radius);
+          this.quadraticCurveTo(x, y, x + radius, y);
+          this.closePath();
+          if (stroke) { this.stroke(); }
+          if (fill) { this.fill(); }
+        };
+    }
     function startDraw() {
       //绘制图片  
       for (var n in options.imgList) {
-        ctx.drawImage(vars["newImg" + n], 0, 0, vars["newImg" + n].width, n != 0 ? vars["newImg" + n].height : PSD_H,P_W * (options.imgList[n].imgX / PSD_W),P_H * (options.imgList[n].imgY / PSD_H), P_W * (options.imgList[n].imgW2 / PSD_W), P_H * (options.imgList[n].imgH2 / PSD_H));
+        if (!options.imgList[n].radius) {
+          drawImg();
+        } else if (options.imgList[n].radius == "50%") {
+          ctx.save();
+          var r = P_W * (options.imgList[n].imgW / PSD_W) * .5;
+          ctx.arc(P_W * (options.imgList[n].imgX / PSD_W) + r, P_H * (options.imgList[n].imgY / PSD_H) + r, r, 0, 2 * Math.PI);
+          ctx.clip();
+          ctx.fill();
+          drawImg(true);
+          ctx.restore();
+        } else {
+          ctx.save();
+          addRoundRectFunc();
+          ctx.roundRect(P_W * (options.imgList[n].imgX / PSD_W),P_H * (options.imgList[n].imgY / PSD_H), P_W * (options.imgList[n].imgW / PSD_W), P_H * (options.imgList[n].imgH / PSD_H), options.imgList[n].radius, true);
+          ctx.globalCompositeOperation = 'source-in';
+          ctx.clip();
+          drawImg();
+          ctx.restore();
+        }
+        function drawImg(arc) {
+          ctx.drawImage(vars["newImg" + n], 0, 0, vars["newImg" + n].width, vars["newImg" + n].height, P_W * (options.imgList[n].imgX / PSD_W), P_H * (options.imgList[n].imgY / PSD_H), P_W * (options.imgList[n].imgW / PSD_W), arc ? P_W * (options.imgList[n].imgW / PSD_W) : P_H * (options.imgList[n].imgH / PSD_H));
+        }
       }
       //绘制文字
-      for (var k in options.textList) {
-        ctx.fillStyle = options.textList[k].color;
-        ctx.font = options.textList[k].fontSize + ' ' + options.textList[k].fontFamily;
-        ctx.textBaseline = 'hanging';
-        isSystem(function(res){
-          if (res.isiOS) {options.textList[k].textY -= 10;} 
-        });
-        ctx.fillText(options.textList[k].string, P_W * (options.textList[k].textX / PSD_W), P_H * (options.textList[k].textY / PSD_H)); 
+      function drawFont() {
+        var fonts = options.textList;
+        for (var k in fonts) {
+          ctx.fillStyle = fonts[k].color;
+          ctx.font = fonts[k].fontSize + ' ' + fonts[k].fontFamily;
+          ctx.textBaseline = 'hanging';
+          isSystem(function(res){
+            if (res.isiOS) {fonts[k].textY -= 10;} 
+          });
+          if (fonts[k].vel) {
+            for (var z in fonts[k].string) {
+              ctx.fillText(fonts[k].string[z], P_W * (fonts[k].textX / PSD_W), P_H * (fonts[k].textY / PSD_H) + z * (parseInt(fonts[k].fontSize) + fonts[k].vel));
+            }
+          } else {
+            ctx.fillText(fonts[k].string, P_W * (fonts[k].textX / PSD_W), P_H * (fonts[k].textY / PSD_H)); 
+          }
+        }
       }
+      drawFont();
       callback(canvas.toDataURL("image/png"));
     }
   }
